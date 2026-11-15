@@ -1,51 +1,88 @@
+# 8-Queens Problem using Backtracking
 
 N = 8
 
-board = [[0 for i in range(N)] for j in range(N)]
-print(board)
+def print_board(board):
+    """Print the chessboard with queens."""
+    for row in board:
+        print(" ".join("Q" if cell else "." for cell in row))
+    print()
 
-def safe(row, col):
-    
-    
 
-    for i in range(row):
-        if board[i][col] == 1:
+def is_safe(board, row, col):
+    """Check if a queen can be placed at board[row][col]."""
+
+    # Check left side of current row
+    for i in range(col):
+        if board[row][i]:
             return False
 
-    for i, j in zip(range(row-1, -1, -1),
-                    range(col-1, -1, -1)):
-        if board[i][j] == 1:
+    # Check upper-left diagonal
+    i, j = row, col
+    while i >= 0 and j >= 0:
+        if board[i][j]:
             return False
+        i -= 1
+        j -= 1
 
-    for i, j in zip(range(row-1, -1, -1),
-                    range(col+1, N)):
-        if board[i][j] == 1:
+    # Check lower-left diagonal
+    i, j = row, col
+    while i < N and j >= 0:
+        if board[i][j]:
             return False
+        i += 1
+        j -= 1
 
     return True
 
 
-def solve(row):
+def solve_queens(board, col):
+    """Solve the problem using backtracking."""
 
-    if row == N:
+    # All queens placed
+    if col >= N:
         return True
 
-    for col in range(N):
+    # Try each row in current column
+    for row in range(N):
 
-        if safe(row, col):
+        if is_safe(board, row, col):
 
+            # Place queen
             board[row][col] = 1
 
-            if solve(row + 1):
+            # Recur for next column
+            if solve_queens(board, col + 1):
                 return True
 
+            # Backtrack
             board[row][col] = 0
 
     return False
 
 
-if solve(0):
-    for row in board:
-        print(row)
+# Driver Program
+board = [[0 for _ in range(N)] for _ in range(N)]
+
+if solve_queens(board, 0):
+    print("Solution Found:\n")
+    print_board(board)
 else:
-    print("Solution not found")
+    print("No solution exists.")
+
+
+    
+'''
+OUTPUT=
+Solution Found:
+
+Q . . . . . . .
+. . . . . . Q .
+. . . . Q . . .
+. . . . . . . Q
+. Q . . . . . .
+. . . Q . . . .
+. . . . . Q . .
+. . Q . . . . .
+
+'''
